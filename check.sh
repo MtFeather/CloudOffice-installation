@@ -68,7 +68,7 @@ echo
 # Check service
 echo "Check services to installation:"
 declare -a services
-services=( 'ntpdate' 'iptables-services' 'nodejs' 'mariadb' 'mrtg' 'qemu-kvm' 'libvirt' 'novnc' 'python-websockify' 'numpy' )
+services=( 'ntpdate' 'iptables-services' 'nodejs' 'mariadb' 'mrtg' 'qemu-kvm' 'libvirt' 'python3-numpy' )
 service=()
 for (( i=0;i<${#services[@]};i++ ))
 do

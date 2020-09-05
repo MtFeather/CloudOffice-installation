@@ -12,7 +12,8 @@ iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables -A INPUT -p icmp -j ACCEPT
 iptables -A INPUT -i lo -j ACCEPT
 iptables -A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
-iptables -A INPUT -p tcp -m tcp --dport 2288 -j ACCEPT
+#iptables -A INPUT -p tcp -m tcp --dport 2288 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
 iptables -A INPUT -p tcp -m tcp --dport 3000 -j ACCEPT
 iptables -A INPUT -p tcp -m tcp --dport 3306 -j ACCEPT
 iptables -A INPUT -i virbr0 -p udp -m udp --dport 53 -j ACCEPT

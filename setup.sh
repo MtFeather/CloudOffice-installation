@@ -12,7 +12,7 @@ if [ "${ans}" != "Y" -a "${ans}" != "y" -a "${ans}" != "yes" ]; then
 	exit 0
 fi
 ##########################################################################################
-if [ "${check}" == "nocheck" ]; then
+if [ "${check}" == "--nocheck" ]; then
 	break
 else
 	# Check System is Physical or Virtual Machine
@@ -84,15 +84,15 @@ echo
 ##########################################################################################
 # 6. install nodejs mysql
 echo "Install ntp,iptables,nodejs,mariadb,mrtg,kvm,qemu,qemu-kvm,libvirt,vier-viewer,novnc,python-websockify,numpy for CloudOffice system:"
-curl --silent --location https://rpm.nodesource.com/setup_6.x | bash - &> /dev/null
-yum -y install epel-release ntpdate iptables-services nodejs mariadb mariadb-server mrtg qemu-kvm libvirt virt-viewer
-yum --enablerepo=epel -y install novnc python-websockify numpy
+curl --silent --location https://rpm.nodesource.com/setup_12.x | bash - &> /dev/null
+yum -y install epel-release ntpdate iptables-services nodejs mariadb mariadb-server mrtg qemu-kvm libvirt virt-viewer git
+yum --enablerepo=epel -y install python3-numpy
 echo
 ##########################################################################################
 # Check service
 echo "Check services to installation:"
 declare -a services
-services=( 'ntpdate' 'iptables-services' 'nodejs' 'mariadb' 'mrtg' 'qemu-kvm' 'libvirt' 'novnc' 'python-websockify' 'numpy' )
+services=( 'ntpdate' 'iptables-services' 'nodejs' 'mariadb' 'mrtg' 'qemu-kvm' 'libvirt' 'python3-numpy' 'git')
 service=()
 for (( i=0;i<${#services[@]};i++ ))
 do
@@ -139,7 +139,7 @@ if [ "$res" == 0 ]; then
 	./bin/mysql_secure_installation
 	echo "CREATE DATABASE nodejs; GRANT all privileges ON nodejs.* TO 'nodejs'@localhost IDENTIFIED BY 'cloudoffice#nodejs';" | mysql -u root --password=2727175
 	mysql -u nodejs --password=cloudoffice#nodejs nodejs < data/nodejs.sql
-	echo "INSERT INTO empdata SET account='admin', password=sha1('admin'), name='admin', level=0, sex='男', email='admin@gmail.com', join_time=NOW(), last_time='',verify=1" | mysql -u nodejs --password=cloudoffice#nodejs nodejs
+	echo "INSERT INTO empdata SET account='admin', password=sha1('admin'), name='admin', level=0, sex='男', email='admin@gmail.com', join_time=NOW(), verify=1" | mysql -u nodejs --password=cloudoffice#nodejs nodejs
 	echo "INSERT INTO user_xml SET eid='1', user_uuid='7a60a500-a64c-4eac-8b5e-49f7a25163ba', oid='0', user_mac1='54:52:00:ea:b7:de', user_mac2='54:52:00:1d:b5:67', user_port='0', user_ip='0', user_cdrom='0', broadcast='0'" | mysql -u nodejs --password=cloudoffice#nodejs nodejs
 fi
 echo
@@ -169,7 +169,10 @@ echo
 ##########################################################################################
 # 9. web page
 echo "Copy web page to /srv/cloudoffice:"
-tar -zxvf data/cloudoffice.tar.gz -C /srv
+if [ ! -d "/srv/cloudoffice" ]; then
+	git clone https://github.com/rHuei/CloudOffice-WEB.git
+	mv CloudOffice-WEB /srv/cloudoffice
+fi
 echo -e '\E[32m\033[1mOk\033[0m'
 echo
 ##########################################################################################
@@ -194,6 +197,7 @@ if [ "${part}" != "" ]; then
 	echo -e '\E[32m'"\033[1mOK\033[0m /vm_data is mounted."
 else 
 	echo -e '\E[33m'"\033[1mWARNING\033[0m /vm_data is not mount."
+	exit 0
 fi
 echo
 ##########################################################################################
@@ -203,7 +207,7 @@ systemctl enable libvirtd.service
 sed -i s/192.168.122/192.168.100/g /etc/libvirt/qemu/networks/default.xml
 virsh net-define /etc/libvirt/qemu/networks/default.xml
 virsh net-destroy default
-virsh net-start default
+systemctl restart libvirtd
 systemctl start nodeserver.service &> /dev/null
 systemctl enable nodeserver.service &> /dev/null
 echo '#########################################################################################'

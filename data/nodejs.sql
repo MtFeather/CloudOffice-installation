@@ -117,7 +117,7 @@ CREATE TABLE `system_control` (
 
 LOCK TABLES `system_control` WRITE;
 /*!40000 ALTER TABLE `system_control` DISABLE KEYS */;
-INSERT INTO `system_control` VALUES ('idle_time','72'),('login','yes'),('max_disk','500'),('max_ram','8'),('register','no'),('usb','yes'),('version','cloudoffice.v0.0.1_20180210');
+INSERT INTO `system_control` VALUES ('idle_time','72'),('login','yes'),('max_disk','500'),('max_ram','8'),('register','no'),('usb','yes'),('version','cloudoffice.v1.0.0_20200905');
 /*!40000 ALTER TABLE `system_control` ENABLE KEYS */;
 UNLOCK TABLES;
 
